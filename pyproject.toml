@@ -3,17 +3,32 @@ name = "cloze-llm"
 version = "0.1.0"
 description = "LLM predictions for cloze-test"
 readme = "README.md"
-requires-python = "==3.10"
+requires-python = "==3.10.*"
 dependencies = [
   "openai>=1.0.0",
   "cursor-notebook-mcp>=0.3.1",
   "pydantic<2.12.0",
   "pip",
   "ipykernel",
+  "ipdb>=0.13.13",
   "pandas>=2.3.3",
 ]
 
-[tool.uv]
-dev-dependencies = []
+[dependency-groups]
+dev = [
+  "ruff>=0.12.5",
+  "ty>=0.0.1a18",
+]
 
-
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle
+  "F",   # Pyflakes
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+  "SIM", # flake8-simplify
+  "I",   # isort
+]
+ignore = [
+  "E501", # line length
+]
