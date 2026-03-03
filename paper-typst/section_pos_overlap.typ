@@ -1,5 +1,7 @@
 == POS Distribution Overlap
 
+Code: `analysis_pos_overlap.py` · Data: `output/pos_overlap.csv`
+
 === Method
 
 To assess whether GPT-4o-mini captures the same syntactic preferences as human respondents, we compare the probability-weighted part-of-speech (POS) distributions produced by each source. For every sentence context, we construct two POS distributions:

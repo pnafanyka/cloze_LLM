@@ -123,41 +123,7 @@ unweighted match and is the more meaningful metric.
 
 = Results
 
-Coverage saturates rapidly: almost all gains occur before $k = 10$, with negligible
-improvement beyond $k = 20$.
-
-#align(center)[
-#table(
-  columns: (auto, auto, auto),
-  align: (center, center, center),
-  table.header[$k$][match\@$k$][weighted match\@$k$],
-  [1],   [0.064], [0.180],
-  [5],   [0.176], [0.363],
-  [10],  [0.208], [0.398],
-  [20],  [0.213], [0.404],
-  [100], [0.216], [0.406],
-  [1000],[0.216], [0.406],
-)
-]
-
-At $k = 10$ the model's top candidates already cover 40 % of human response mass on average,
-but only 21 % of unique answer *types* — reflecting that GPT reliably finds the most frequent
-human answers while missing rare or idiosyncratic ones.
-
-In 9 contexts (e.g. _летела_, _миссионеры_, _обгорели_) GPT produces *zero overlap* with
-any human answer even at $k = 1000$, suggesting fundamental distributional divergence on
-semantically constrained or low-frequency items.
-
-= Summary
-
-GPT-4o-mini's probability mass concentrates on the same words humans prefer most, but its
-vocabulary of plausible continuations is much narrower: the long tail of human creativity
-(typos aside) is largely absent from the model's distribution.
-The sharp saturation of match\@k by $k = 10$ means that simply taking the model's
-top-10 candidates is nearly as informative as its entire ranked list.
-
-= New Analyses
-
+#include "section_surface_match.typ"
 #include "section_lexical.typ"
 #include "section_pos_overlap.typ"
 #include "section_pos_corr.typ"

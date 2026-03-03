@@ -1,5 +1,7 @@
 == Entropy-Stratified Analysis
 
+Code: `analysis_entropy.py` · Data: `output/entropy_analysis.csv`
+
 === Method
 
 To assess how distributional uncertainty in human responses relates to human--model agreement, we compute Shannon entropy for each of the 144 sentence contexts and stratify the overlap analysis by entropy quartile.

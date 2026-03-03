@@ -1,5 +1,7 @@
 == Lexical Overlap (Lemma-Based)
 
+Code: `analysis_lexical.py` · Data: `output/lexical_overlap.csv`
+
 === Method
 
 The surface-form match\@$k$ metric reported earlier treats morphological variants of the same

@@ -1,5 +1,7 @@
 == POS Probability Correlation
 
+Code: `analysis_pos_corr.py` · Data: `output/pos_correlation.csv`, `output/pos_delta.csv`
+
 === Method
 
 While the POS overlap analysis (preceding section) asks whether humans and GPT-4o-mini

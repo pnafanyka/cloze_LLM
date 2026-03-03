@@ -1,5 +1,7 @@
 == Target Word Analysis
 
+Code: `analysis_target.py` · Data: `output/target_analysis.csv`
+
 === Method
 
 To assess whether human and model predictions converge specifically on the _target_ word (the word originally deleted from the sentence), we computed the probability mass each source allocates to the target lemma. For humans, $p_"target"^"human"$ equals the summed response proportion (`probability_y`) across all unique answers whose lemma matches the target lemma within a given context. For the model, $p_"target"^"model"$ equals the summed converted probability (`probability_converted`) across all unique predictions whose lemma matches the target, after deduplication by surface form (retaining the highest-probability variant).
