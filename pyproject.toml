@@ -12,6 +12,7 @@ dependencies = [
   "ipykernel",
   "ipdb>=0.13.13",
   "pandas>=2.3.3",
+  "scipy>=1.15.3",
 ]
 
 [dependency-groups]

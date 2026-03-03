@@ -155,3 +155,11 @@ vocabulary of plausible continuations is much narrower: the long tail of human c
 (typos aside) is largely absent from the model's distribution.
 The sharp saturation of match\@k by $k = 10$ means that simply taking the model's
 top-10 candidates is nearly as informative as its entire ranked list.
+
+= New Analyses
+
+#include "section_lexical.typ"
+#include "section_pos_overlap.typ"
+#include "section_pos_corr.typ"
+#include "section_entropy.typ"
+#include "section_target.typ"
