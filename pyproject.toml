@@ -1,0 +1,19 @@
+[project]
+name = "cloze-llm"
+version = "0.1.0"
+description = "LLM predictions for cloze-test"
+readme = "README.md"
+requires-python = "==3.10"
+dependencies = [
+  "openai>=1.0.0",
+  "cursor-notebook-mcp>=0.3.1",
+  "pydantic<2.12.0",
+  "pip",
+  "ipykernel",
+  "pandas>=2.3.3",
+]
+
+[tool.uv]
+dev-dependencies = []
+
+
