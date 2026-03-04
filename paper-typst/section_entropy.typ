@@ -12,7 +12,7 @@ $ H_"human" (c) = - sum_(i=1)^(m) p_i ln p_i $
 
 Low entropy indicates high agreement among respondents (one dominant answer); high entropy indicates a dispersed response distribution.
 
-*Model entropy.* For GPT-4o-mini, the API returns an unnormalized probability distribution over multi-token continuations: the sum of `probability_converted` per context ranges from 0.13 to 2.00 (median 0.51), with 7 of 144 contexts exceeding 1.0 due to overlapping probability paths among multi-token completions. We compute entropy over the raw (non-renormalized) probabilities:
+*Model entropy.* For GPT-4o-mini, the API returns an unnormalized probability distribution over multi-token continuations: the sum of `probability_converted` per context ranges from 0.13 to 2.00 (median 0.51), with 7 of 144 contexts exceeding 1.0.#footnote[Sums exceeding 1.0 arise because the model predictions include both partial prefixes and their completions as separate entries. For example, for the context targeting _банке_, both the prefix "бан" ($p = 0.996$) and the full continuation "банке" ($p = 0.996$) appear as distinct rows --- their probabilities are per-path in the token tree, not per-leaf, so they are not mutually exclusive. The same pattern occurs in all 7 affected contexts (e.g., "покрыв"/"покрывало", "раст"/"растительным").] We compute entropy over the raw (non-renormalized) probabilities:
 
 $ H_"model" (c) = - sum_(j=1)^(n) q_j ln q_j $
 
