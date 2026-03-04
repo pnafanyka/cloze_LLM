@@ -1,6 +1,6 @@
 == Entropy-Stratified Analysis
 
-Code: `analysis_entropy.py` · Data: `output/entropy_analysis.csv`
+Code: `analysis_entropy.py` · Data: `output/entropy/`
 
 === Method
 

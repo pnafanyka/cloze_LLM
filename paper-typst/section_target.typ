@@ -1,6 +1,6 @@
 == Target Word Analysis
 
-Code: `analysis_target.py` · Data: `output/target_analysis.csv`
+Code: `analysis_target.py` · Data: `output/target/`
 
 === Method
 

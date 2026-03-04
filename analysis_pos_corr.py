@@ -10,12 +10,18 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-OUT = pathlib.Path("output")
-OUT.mkdir(exist_ok=True)
+OUT = pathlib.Path("output/pos_corr")
+OUT.mkdir(parents=True, exist_ok=True)
 
 # ── Load data ────────────────────────────────────────────────────────
 human_raw = pd.read_csv("people_with_prob.csv")
 model_raw = pd.read_csv("gpt4omini_morph_2.csv")
+
+# ── Context lookup ───────────────────────────────────────────────────
+context_lookup = (
+    human_raw.drop_duplicates("word.id")[["word.id", "Left context"]]
+    .rename(columns={"word.id": "target_word", "Left context": "left_context"})
+)
 
 # ── Deduplicate ──────────────────────────────────────────────────────
 # Human: one row per (context, answer) — take first row's probability_y & upos
@@ -86,25 +92,43 @@ for pos in all_pos:
     )
 
 corr_df = pd.DataFrame(rows).sort_values("pearson_r", ascending=False)
-corr_df.to_csv(OUT / "pos_correlation.csv", index=False)
+corr_df.to_csv(OUT / "per_pos_correlation.csv", index=False)
 
 print("=== Algorithm-2: Per-POS correlation ===")
 print(corr_df.to_string(index=False))
 print()
 
+# ── Save POS matrices with context columns ───────────────────────────
+def _add_context_cols(pos_df):
+    """Reset index, rename to target_word, merge left_context, reorder."""
+    df = pos_df.reset_index().rename(columns={"word_id": "target_word"})
+    df = df.merge(context_lookup, on="target_word", how="left")
+    cols = ["left_context", "target_word"] + [c for c in df.columns if c not in ("left_context", "target_word")]
+    return df[cols]
+
+_add_context_cols(human_pos).to_csv(OUT / "human_pos_matrix.csv", index=False)
+_add_context_cols(model_pos).to_csv(OUT / "model_pos_matrix.csv", index=False)
+
 # ── Algorithm-3: Delta-table ─────────────────────────────────────────
 delta = (human_pos - model_pos).abs()
 mean_delta_per_context = delta.mean(axis=1)
 
-delta_out = pd.DataFrame({"word_id": all_contexts, "mean_delta": mean_delta_per_context.values})
+delta_out = pd.DataFrame({"target_word": all_contexts, "mean_delta": mean_delta_per_context.values})
 for pos in all_pos:
     delta_out[pos] = delta[pos].values
-delta_out.to_csv(OUT / "pos_delta.csv", index=False)
+delta_out = delta_out.merge(context_lookup, on="target_word", how="left")
+cols = ["left_context", "target_word"] + [c for c in delta_out.columns if c not in ("left_context", "target_word")]
+delta_out = delta_out[cols]
+delta_out.to_csv(OUT / "per_context_delta.csv", index=False)
 
 overall_mean_delta = mean_delta_per_context.mean()
+
+# ── Summary ──────────────────────────────────────────────────────────
+summary = pd.DataFrame({"overall_mean_delta": [round(overall_mean_delta, 4)]})
+summary.to_csv(OUT / "summary.csv", index=False)
+
 print("=== Algorithm-3: Delta-table ===")
 print(f"Overall mean delta: {overall_mean_delta:.4f}")
 print(f"Per-context mean delta: min={mean_delta_per_context.min():.4f}, "
       f"max={mean_delta_per_context.max():.4f}")
-print(f"\nDelta saved to {OUT / 'pos_delta.csv'}")
-print(f"Correlation saved to {OUT / 'pos_correlation.csv'}")
+print(f"\nOutputs saved to {OUT}/")

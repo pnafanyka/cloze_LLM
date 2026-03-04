@@ -1,6 +1,6 @@
 == POS Probability Correlation
 
-Code: `analysis_pos_corr.py` · Data: `output/pos_correlation.csv`, `output/pos_delta.csv`
+Code: `analysis_pos_corr.py` · Data: `output/pos_corr/`
 
 === Method
 

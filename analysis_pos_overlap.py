@@ -3,7 +3,8 @@
 Compares the probability-weighted POS distributions of human cloze responses
 and GPT-4o-mini predictions across 144 Russian sentence contexts.
 
-Outputs: output/pos_overlap.csv  (per-context results)
+Outputs: output/pos_overlap/  (human_pos_distribution.csv,
+         model_pos_distribution.csv, per_context_results.csv, summary.csv)
 """
 
 import pathlib
@@ -12,12 +13,18 @@ import pandas as pd
 
 # ── paths ──────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parent
-OUT = ROOT / "output"
-OUT.mkdir(exist_ok=True)
+OUT = ROOT / "output" / "pos_overlap"
+OUT.mkdir(parents=True, exist_ok=True)
 
 # ── load data ──────────────────────────────────────────────────────────
 human = pd.read_csv(ROOT / "people_with_prob.csv")
 gpt = pd.read_csv(ROOT / "gpt4omini_morph_2.csv")
+
+# ── context lookup table ───────────────────────────────────────────────
+context_lookup = (
+    human.drop_duplicates("word.id")[["word.id", "Left context"]]
+    .rename(columns={"word.id": "target_word", "Left context": "left_context"})
+)
 
 # ── human POS distribution ─────────────────────────────────────────────
 # Dedup: one row per (context, answer) — take first probability_y & upos
@@ -90,10 +97,45 @@ for ctx in all_contexts:
     )
 
 results = pd.DataFrame(rows)
-results.to_csv(OUT / "pos_overlap.csv", index=False)
-print(f"Saved {len(results)} rows to {OUT / 'pos_overlap.csv'}")
+
+# ── save human POS distribution ────────────────────────────────────────
+human_pos_out = (
+    human_pos.rename(columns={"word_id": "target_word", "pos": "upos", "weight": "probability"})
+    .merge(context_lookup, on="target_word", how="left")
+)
+human_pos_out = human_pos_out[["left_context", "target_word", "upos", "probability"]]
+human_pos_out.to_csv(OUT / "human_pos_distribution.csv", index=False)
+
+# ── save model POS distribution ────────────────────────────────────────
+model_pos_out = (
+    model_pos.rename(columns={"word_id": "target_word", "pos": "upos", "weight": "probability"})
+    .merge(context_lookup, on="target_word", how="left")
+)
+model_pos_out = model_pos_out[["left_context", "target_word", "upos", "probability"]]
+model_pos_out.to_csv(OUT / "model_pos_distribution.csv", index=False)
+
+# ── save per-context results ───────────────────────────────────────────
+results_out = (
+    results.rename(columns={"word_id": "target_word"})
+    .merge(context_lookup, on="target_word", how="left")
+)
+cols = ["left_context", "target_word"] + [c for c in results_out.columns if c not in ("left_context", "target_word")]
+results_out = results_out[cols]
+results_out.to_csv(OUT / "per_context_results.csv", index=False)
+print(f"Saved {len(results_out)} rows to {OUT / 'per_context_results.csv'}")
 
 # ── summary statistics ─────────────────────────────────────────────────
+summary_rows = []
+for k in K_VALUES:
+    row = {"k": k, "mean_pos_intersection_at_k": results[f"pos_intersection_at_{k}"].mean()}
+    if k == 1:
+        row["mean_pos_match_at_1"] = results["pos_match_at_1"].mean()
+    else:
+        row["mean_pos_match_at_1"] = None
+    summary_rows.append(row)
+summary = pd.DataFrame(summary_rows)[["k", "mean_pos_match_at_1", "mean_pos_intersection_at_k"]]
+summary.to_csv(OUT / "summary.csv", index=False)
+
 print("\n=== Mean values across all contexts ===")
 print(f"  POS overlap@1 (exact top-POS match): {results['pos_match_at_1'].mean():.4f}")
 for k in K_VALUES:

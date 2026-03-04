@@ -4,9 +4,17 @@ from scipy import stats
 from pathlib import Path
 
 K_VALUES = [5, 10, 20, 50, 100]
+OUT = Path("output/target")
+OUT.mkdir(parents=True, exist_ok=True)
 
 people = pd.read_csv("people_with_prob.csv")
 gpt = pd.read_csv("gpt4omini_morph_2.csv")
+
+# ---- Context lookup table ----
+context_lookup = (
+    people.drop_duplicates("word.id")[["word.id", "Left context"]]
+    .rename(columns={"word.id": "target_word", "Left context": "left_context"})
+)
 
 # ---- p_target_human per context ----
 # Dedup human answers: groupby word.id + answer, take first probability_y and lemma_accuracy
@@ -19,6 +27,15 @@ p_target_human = (
     .sum()
     .reindex(people["word.id"].unique(), fill_value=0.0)
     .rename("p_target_human")
+)
+
+# n_human_target_matches: count of unique human answers where lemma_accuracy == 1
+n_human_target = (
+    human_deduped[human_deduped["lemma_accuracy"] == 1]
+    .groupby("word.id")["answer_stripped"]
+    .nunique()
+    .reindex(people["word.id"].unique(), fill_value=0)
+    .rename("n_human_target_matches")
 )
 
 # ---- p_target_model per context ----
@@ -37,6 +54,15 @@ p_target_model = (
     .rename("p_target_model")
 )
 
+# n_model_target_matches: count of unique model predictions where lemma_accuracy == 1
+n_model_target = (
+    gpt_deduped[gpt_deduped["lemma_accuracy"] == 1]
+    .groupby("target_word_id")["pred_stripped"]
+    .nunique()
+    .reindex(people["word.id"].unique(), fill_value=0)
+    .rename("n_model_target_matches")
+)
+
 # ---- Merge into a per-context frame ----
 contexts = pd.DataFrame({"word_id": people["word.id"].unique()})
 contexts = contexts.merge(
@@ -49,8 +75,20 @@ contexts = contexts.merge(
     on="word_id",
     how="left",
 )
+contexts = contexts.merge(
+    n_human_target.reset_index().rename(columns={"word.id": "word_id"}),
+    on="word_id",
+    how="left",
+)
+contexts = contexts.merge(
+    n_model_target.reset_index().rename(columns={"target_word_id": "word_id"}),
+    on="word_id",
+    how="left",
+)
 contexts["p_target_human"] = contexts["p_target_human"].fillna(0.0)
 contexts["p_target_model"] = contexts["p_target_model"].fillna(0.0)
+contexts["n_human_target_matches"] = contexts["n_human_target_matches"].fillna(0).astype(int)
+contexts["n_model_target_matches"] = contexts["n_model_target_matches"].fillna(0).astype(int)
 
 # ---- Correlation ----
 r_pearson, p_pearson = stats.pearsonr(
@@ -65,6 +103,13 @@ print(f"  Pearson  r = {r_pearson:.4f}, p = {p_pearson:.2e}")
 print(f"  Spearman r = {r_spearman:.4f}, p = {p_spearman:.2e}")
 print()
 
+# ---- Save correlation_summary.csv ----
+corr_df = pd.DataFrame([
+    {"metric": "Pearson", "r": r_pearson, "p_value": p_pearson},
+    {"metric": "Spearman", "r": r_spearman, "p_value": p_spearman},
+])
+corr_df.to_csv(OUT / "correlation_summary.csv", index=False)
+
 # ---- Quartiles by p_target_human ----
 # Many contexts have p_target_human == 0, so we use rank-based quartiles
 # with duplicates="drop" to handle tied zero values.
@@ -73,6 +118,18 @@ contexts["target_quartile"] = pd.qcut(
     4,
     labels=["Q1", "Q2", "Q3", "Q4"],
 )
+
+# ---- Save per_context_target_probs.csv ----
+probs_out = contexts[["word_id", "p_target_human", "p_target_model",
+                       "n_human_target_matches", "n_model_target_matches"]].copy()
+probs_out = probs_out.rename(columns={"word_id": "target_word"})
+probs_out.insert(1, "target_lemma", probs_out["target_word"])
+probs_out = probs_out.merge(context_lookup, on="target_word", how="left")
+# Reorder: left_context, target_word first
+probs_out = probs_out[["left_context", "target_word", "target_lemma",
+                        "p_target_human", "p_target_model",
+                        "n_human_target_matches", "n_model_target_matches"]]
+probs_out.to_csv(OUT / "per_context_target_probs.csv", index=False)
 
 # ---- Overlap@K computation per context ----
 # Prepare GPT lemmas: dedup by lemma, keep highest prob per lemma per context
@@ -120,15 +177,23 @@ for _, row in contexts.iterrows():
 overlap_df = pd.DataFrame(overlap_records)
 contexts = pd.concat([contexts.reset_index(drop=True), overlap_df], axis=1)
 
-# ---- Save output ----
-Path("output").mkdir(exist_ok=True)
-out_cols = (
-    ["word_id", "p_target_human", "p_target_model", "target_quartile"]
+# ---- Save per_context_overlap.csv ----
+overlap_cols = (
+    ["word_id", "target_quartile"]
     + [f"overlap_at_{k}" for k in K_VALUES]
     + [f"weighted_overlap_at_{k}" for k in K_VALUES]
 )
-contexts[out_cols].to_csv("output/target_analysis.csv", index=False)
-print(f"Written {len(contexts)} rows to output/target_analysis.csv\n")
+overlap_out = contexts[overlap_cols].copy()
+overlap_out = overlap_out.rename(columns={"word_id": "target_word"})
+overlap_out = overlap_out.merge(context_lookup, on="target_word", how="left")
+overlap_out = overlap_out[
+    ["left_context", "target_word", "target_quartile"]
+    + [f"overlap_at_{k}" for k in K_VALUES]
+    + [f"weighted_overlap_at_{k}" for k in K_VALUES]
+]
+overlap_out.to_csv(OUT / "per_context_overlap.csv", index=False)
+
+print(f"Written {len(contexts)} rows to {OUT}/\n")
 
 # ---- Quartile summary ----
 print("=== Quartile summary (by p_target_human) ===\n")
@@ -136,6 +201,14 @@ summary_cols = ["p_target_human", "p_target_model"]
 summary_cols += [f"overlap_at_{k}" for k in K_VALUES]
 summary_cols += [f"weighted_overlap_at_{k}" for k in K_VALUES]
 q_summary = contexts.groupby("target_quartile", observed=True)[summary_cols].mean()
+
+# ---- Save quartile_summary.csv ----
+q_out = q_summary.reset_index().rename(columns={
+    "target_quartile": "quartile",
+    "p_target_human": "mean_p_target_human",
+    "p_target_model": "mean_p_target_model",
+})
+q_out.to_csv(OUT / "quartile_summary.csv", index=False)
 
 print(f"{'Quartile':>10}  {'mean_p_h':>10}  {'mean_p_m':>10}", end="")
 for k in K_VALUES:

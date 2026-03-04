@@ -1,6 +1,6 @@
 == POS Distribution Overlap
 
-Code: `analysis_pos_overlap.py` · Data: `output/pos_overlap.csv`
+Code: `analysis_pos_overlap.py` · Data: `output/pos_overlap/`
 
 === Method
 
