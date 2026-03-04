@@ -39,6 +39,6 @@ Intersection\@$k$ decreases as $k$ grows, falling from 0.556 at $k = 1$ to 0.464
 
 === Interpretation
 
-A POS overlap\@1 of 56% shows that the model and humans agree on the dominant syntactic category roughly half the time. This is a moderate level of agreement --- substantially above chance (given the number of possible UPOS tags), yet far from ceiling. Contexts where they disagree often involve the model assigning highest mass to punctuation (PUNCT) or function words (ADP, SCONJ), while humans favour content-word categories such as PRON or VERB.
+A POS overlap\@1 of 56% shows that the model and humans agree on the dominant syntactic category roughly half the time. This is a moderate level of agreement --- substantially above chance (given the number of possible UPOS tags), yet far from ceiling. Contexts where they disagree often involve the model assigning highest mass to punctuation (PUNCT) or function words (PART, ADP), while humans favour content-word categories such as NOUN or VERB.
 
 The gradual decline of intersection\@$k$ with increasing $k$ suggests that the syntactic diversity of human responses is only partially mirrored by the model. At $k = 5$ the model still recovers roughly 46% of the top human POS categories on average, indicating that the two distributions share a common core of syntactic expectations but diverge in the tails. These findings are consistent with the lexical overlap results: GPT-4o-mini captures the broad syntactic shape of human expectations while differing in finer distributional details.

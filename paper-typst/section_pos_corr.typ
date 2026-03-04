@@ -69,7 +69,7 @@ ADJ ($r = 0.52$). The relatively high Spearman correlation for NOUN ($rho = 0.81
 suggests strong rank-order agreement even when absolute probability magnitudes differ.
 
 The weakest correlations are observed for categories that are either rare or
-context-insensitive: PUNCT ($r = -0.04$), PROPN ($r = -0.01$), INTJ ($r = -0.004$), and
+context-insensitive: PUNCT ($r = -0.04$), PROPN ($r = -0.007$), INTJ ($r = -0.004$), and
 X ($r = 0.02$). The model's tendency to assign substantial probability to punctuation
 tokens (which rarely appear in human cloze responses) drives the near-zero or negative
 PUNCT correlation.

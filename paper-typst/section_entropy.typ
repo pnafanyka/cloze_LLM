@@ -12,11 +12,11 @@ $ H_"human" (c) = - sum_(i=1)^(m) p_i ln p_i $
 
 Low entropy indicates high agreement among respondents (one dominant answer); high entropy indicates a dispersed response distribution.
 
-*Model entropy.* For GPT-4o-mini, the API returns a truncated probability distribution: the sum of token probabilities per context ranges from 0.16 to 0.85. We compute a partial-distribution entropy over the raw (non-renormalized) probabilities:
+*Model entropy.* For GPT-4o-mini, the API returns an unnormalized probability distribution over multi-token continuations: the sum of `probability_converted` per context ranges from 0.13 to 2.00 (median 0.51), with 7 of 144 contexts exceeding 1.0 due to overlapping probability paths among multi-token completions. We compute entropy over the raw (non-renormalized) probabilities:
 
 $ H_"model" (c) = - sum_(j=1)^(n) q_j ln q_j $
 
-where $q_j$ is `probability_converted` for the $j$-th unique prediction. Because the distribution is incomplete, $H_"model"$ is not directly comparable in magnitude to $H_"human"$, but it still captures how concentrated or spread the model's probability mass is within the observed portion.
+where $q_j$ is `probability_converted` for the $j$-th unique prediction. Because the distribution is neither complete nor guaranteed to sum to 1, $H_"model"$ is not directly comparable in magnitude to $H_"human"$, but it still captures how concentrated or spread the model's probability mass is within the observed portion.
 
 *Quartile stratification.* We rank all 144 contexts by $H_"human"$ and split them into four quartiles using `pandas.qcut` (Q1 = lowest entropy, Q4 = highest). Within each quartile we report the mean lemma-based overlap\@$K$ and weighted overlap\@$K$ at $K in {5, 10, 20, 50, 100}$, following the same lemma-matching procedure described in the lexical overlap analysis.
 

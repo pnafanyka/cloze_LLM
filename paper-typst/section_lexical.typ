@@ -59,8 +59,8 @@ Lemma-based overlap consistently exceeds surface-form matching at every $k$, con
 a portion of apparent mismatches between human and model responses are attributable to
 morphological variation rather than genuine lexical divergence. At $k = 10$, lemma overlap
 reaches 0.219 (vs.\ 0.208 for surface match) and weighted lemma overlap reaches 0.420
-(vs.\ 0.398), representing a relative improvement of roughly 5% in type coverage and
-6% in probability mass coverage.
+(vs.\ 0.398), representing a relative improvement of roughly 5--6% in both type coverage and
+probability mass coverage.
 
 However, the gains from lemmatisation are modest. The lemma-based ceiling at $k = 200$
 (0.235 unweighted, 0.436 weighted) remains well below full coverage, indicating that the
