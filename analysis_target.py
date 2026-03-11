@@ -110,14 +110,14 @@ corr_df = pd.DataFrame([
 ])
 corr_df.to_csv(OUT / "correlation_summary.csv", index=False)
 
-# ---- Quartiles by p_target_human ----
-# Many contexts have p_target_human == 0, so we use rank-based quartiles
-# with duplicates="drop" to handle tied zero values.
-contexts["target_quartile"] = pd.qcut(
-    contexts["p_target_human"].rank(method="first"),
-    4,
-    labels=["Q1", "Q2", "Q3", "Q4"],
-)
+# ---- 2×2 target-hit classes ----
+human_hit = contexts["p_target_human"] > 0
+model_hit = contexts["p_target_model"] > 0
+contexts["target_class"] = "C4"  # default: neither
+contexts.loc[human_hit & model_hit, "target_class"] = "C1"   # both hit
+contexts.loc[human_hit & ~model_hit, "target_class"] = "C2"  # only humans
+contexts.loc[~human_hit & model_hit, "target_class"] = "C3"  # only model
+contexts.loc[~human_hit & ~model_hit, "target_class"] = "C4"  # neither
 
 # ---- Save per_context_target_probs.csv ----
 probs_out = contexts[["word_id", "p_target_human", "p_target_model",
@@ -179,7 +179,7 @@ contexts = pd.concat([contexts.reset_index(drop=True), overlap_df], axis=1)
 
 # ---- Save per_context_overlap.csv ----
 overlap_cols = (
-    ["word_id", "target_quartile"]
+    ["word_id", "target_class"]
     + [f"overlap_at_{k}" for k in K_VALUES]
     + [f"weighted_overlap_at_{k}" for k in K_VALUES]
 )
@@ -187,39 +187,62 @@ overlap_out = contexts[overlap_cols].copy()
 overlap_out = overlap_out.rename(columns={"word_id": "target_word"})
 overlap_out = overlap_out.merge(context_lookup, on="target_word", how="left")
 overlap_out = overlap_out[
-    ["left_context", "target_word", "target_quartile"]
+    ["left_context", "target_word", "target_class"]
     + [f"overlap_at_{k}" for k in K_VALUES]
     + [f"weighted_overlap_at_{k}" for k in K_VALUES]
 ]
 overlap_out.to_csv(OUT / "per_context_overlap.csv", index=False)
 
+# Also remove stale quartile file if present
+(OUT / "quartile_summary.csv").unlink(missing_ok=True)
+
 print(f"Written {len(contexts)} rows to {OUT}/\n")
 
-# ---- Quartile summary ----
-print("=== Quartile summary (by p_target_human) ===\n")
+# ---- Class summary ----
+CLASS_LABELS = ["C1", "C2", "C3", "C4"]
+CLASS_DESCR = {
+    "C1": "both hit",
+    "C2": "only humans",
+    "C3": "only model",
+    "C4": "neither",
+}
+
+print("=== Class counts ===")
+for c in CLASS_LABELS:
+    n = (contexts["target_class"] == c).sum()
+    print(f"  {c} ({CLASS_DESCR[c]}): {n}")
+print()
+
+print("=== Class summary (target-hit classes) ===\n")
 summary_cols = ["p_target_human", "p_target_model"]
 summary_cols += [f"overlap_at_{k}" for k in K_VALUES]
 summary_cols += [f"weighted_overlap_at_{k}" for k in K_VALUES]
-q_summary = contexts.groupby("target_quartile", observed=True)[summary_cols].mean()
+q_summary = contexts.groupby("target_class", observed=True)[summary_cols].mean()
 
-# ---- Save quartile_summary.csv ----
+# ---- Save class_summary.csv ----
 q_out = q_summary.reset_index().rename(columns={
-    "target_quartile": "quartile",
+    "target_class": "class",
     "p_target_human": "mean_p_target_human",
     "p_target_model": "mean_p_target_model",
 })
-q_out.to_csv(OUT / "quartile_summary.csv", index=False)
+q_out["description"] = q_out["class"].map(CLASS_DESCR)
+q_out["n_contexts"] = [
+    (contexts["target_class"] == c).sum() for c in q_out["class"]
+]
+q_out.to_csv(OUT / "class_summary.csv", index=False)
 
-print(f"{'Quartile':>10}  {'mean_p_h':>10}  {'mean_p_m':>10}", end="")
+print(f"{'Class':>10}  {'mean_p_h':>10}  {'mean_p_m':>10}", end="")
 for k in K_VALUES:
     print(f"  {'ov@' + str(k):>8}", end="")
 for k in K_VALUES:
     print(f"  {'w_ov@' + str(k):>10}", end="")
 print()
 print("-" * 130)
-for q in ["Q1", "Q2", "Q3", "Q4"]:
-    r = q_summary.loc[q]
-    print(f"{q:>10}  {r['p_target_human']:>10.4f}  {r['p_target_model']:>10.4f}", end="")
+for c in CLASS_LABELS:
+    if c not in q_summary.index:
+        continue
+    r = q_summary.loc[c]
+    print(f"{c:>10}  {r['p_target_human']:>10.4f}  {r['p_target_model']:>10.4f}", end="")
     for k in K_VALUES:
         print(f"  {r[f'overlap_at_{k}']:>8.3f}", end="")
     for k in K_VALUES:

@@ -2,7 +2,13 @@ rule typst_compile
   command = typst compile --ignore-system-fonts $in $out
   description = Building $out with typst
 
-build paper-typst/main.pdf: typst_compile paper-typst/main.typ
+build paper-typst/main.pdf: typst_compile paper-typst/main.typ | $
+  paper-typst/section_surface_match.typ $
+  paper-typst/section_lexical.typ $
+  paper-typst/section_pos_overlap.typ $
+  paper-typst/section_pos_corr.typ $
+  paper-typst/section_entropy.typ $
+  paper-typst/section_target.typ
 
 build paper: phony paper-typst/main.pdf
 
