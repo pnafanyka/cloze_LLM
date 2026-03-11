@@ -3,12 +3,14 @@ from pathlib import Path
 import pandas as pd
 from scipy import stats
 
+from filter_data import load_gpt, load_human
+
 K_VALUES = [5, 10, 20, 50, 100]
 OUT = Path("output/target")
 OUT.mkdir(parents=True, exist_ok=True)
 
-people = pd.read_csv("people_with_prob.csv")
-gpt = pd.read_csv("gpt4omini_morph_2.csv")
+people = load_human()
+gpt = load_gpt()
 
 # ---- Context lookup table ----
 context_lookup = (

@@ -2,10 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 
+from filter_data import load_gpt, load_human
+
 K_VALUES = [1, 5, 10, 20, 50, 100, 200, 500, 1000]
 
-people = pd.read_csv("people_with_prob.csv")
-gpt = pd.read_csv("gpt4omini_morph_2.csv")
+people = load_human()
+gpt = load_gpt()
 
 # Strip whitespace from prediction tokens
 gpt["pred_stripped"] = gpt["prediction_cleaned"].str.strip()

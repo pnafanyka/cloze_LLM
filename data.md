@@ -16,6 +16,8 @@ Each row = one ranked token continuation from GPT-4o-mini, sorted by descending 
 Post-hoc Stanza morphological tagging added as `upos_word`, `lemma_word`, `feats`.
 Top predictions are often punctuation or pronouns, not the target word.
 
+Both CSVs have an `is_russian` column. All analysis scripts use `filter_data.py` to load data filtered to `is_russian == True`, yielding 6,705 human rows (622 subjects, 11–147 per context) and 21,818 GPT rows (2–1,067 candidates per context after dedup). Human `probability_y` is renormalized after filtering.
+
 ## combined_results_gpt4o_mini.csv — Raw GPT-4o-mini output (pre-processing)
 Simpler, earlier-stage file with only 6 columns: `row_number`, `text_test`, `finished`, `prediction_cleaned`, `sum_logprobs`, `probability_converted`.
 No `target_word_id` or morphological info — this is the raw API dump before the morphological markup and accuracy scoring pipeline was applied.

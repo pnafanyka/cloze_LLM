@@ -11,14 +11,16 @@ import pathlib
 
 import pandas as pd
 
+from filter_data import load_gpt, load_human
+
 # ── paths ──────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parent
 OUT = ROOT / "output" / "pos_overlap"
 OUT.mkdir(parents=True, exist_ok=True)
 
 # ── load data ──────────────────────────────────────────────────────────
-human = pd.read_csv(ROOT / "people_with_prob.csv")
-gpt = pd.read_csv(ROOT / "gpt4omini_morph_2.csv")
+human = load_human()
+gpt = load_gpt()
 
 # ── context lookup table ───────────────────────────────────────────────
 context_lookup = (

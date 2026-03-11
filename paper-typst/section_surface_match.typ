@@ -28,17 +28,17 @@ improvement beyond $k = 20$.
   columns: (auto, auto, auto),
   align: (center, center, center),
   table.header[$k$][match\@$k$][weighted match\@$k$],
-  [1],   [0.064], [0.180],
-  [5],   [0.176], [0.363],
-  [10],  [0.208], [0.398],
-  [20],  [0.213], [0.404],
-  [100], [0.216], [0.406],
-  [1000],[0.216], [0.406],
+  [1],   [0.077], [0.204],
+  [5],   [0.200], [0.385],
+  [10],  [0.230], [0.412],
+  [20],  [0.236], [0.416],
+  [100], [0.238], [0.418],
+  [1000],[0.238], [0.418],
 )
 ]
 
-At $k = 10$ the model's top candidates already cover 40 % of human response mass on average,
-but only 21 % of unique answer *types* — reflecting that GPT reliably finds the most frequent
+At $k = 10$ the model's top candidates already cover 41 % of human response mass on average,
+but only 23 % of unique answer *types* — reflecting that GPT reliably finds the most frequent
 human answers while missing rare or idiosyncratic ones.
 
 In 9 contexts (e.g. _Когда она в самолёте_, _В резервациях_, _У Пашки_) GPT produces *zero overlap* with

@@ -10,12 +10,14 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from filter_data import load_gpt, load_human
+
 OUT = pathlib.Path("output/pos_corr")
 OUT.mkdir(parents=True, exist_ok=True)
 
 # ── Load data ────────────────────────────────────────────────────────
-human_raw = pd.read_csv("people_with_prob.csv")
-model_raw = pd.read_csv("gpt4omini_morph_2.csv")
+human_raw = load_human()
+model_raw = load_gpt()
 
 # ── Context lookup ───────────────────────────────────────────────────
 context_lookup = (

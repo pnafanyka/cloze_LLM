@@ -99,11 +99,11 @@ distributions and empirically observed human norms under identical contextual co
 A *cloze task* presents a sentence with the final word removed; respondents supply what
 comes next.
 The dataset covers *144 Russian sentence contexts*.
-Human responses were collected from 628 subjects (14–151 per context, avg 48),
-yielding 6 898 individual responses with 1–65 unique answers per context.
+Human responses were collected from 622 subjects (11–147 per context, avg 47),
+yielding 6 705 individual responses with 1–63 unique answers per context.
 GPT-4o-mini predictions were obtained as a ranked list of token continuations
 with log-probabilities, converted to probabilities via $exp(sum "logprob")$.
-After deduplication by stripped surface form, each context has between 6 and 13 957 distinct
+After deduplication by stripped surface form, each context has between 2 and 1 067 distinct
 GPT candidates.
 
 = Metrics
@@ -111,7 +111,7 @@ GPT candidates.
 *Human accuracy* — the proportion of human respondents who gave the exact ground-truth
 target word.
 In 62 % of contexts (89/144) no human guessed the target at all; mean accuracy across all
-contexts is 0.10 (median 0.00), reaching 1.00 only for the easiest items.
+contexts is 0.11 (median 0.00), reaching 1.00 only for the easiest items.
 
 *match\@k* — for a given $k$, the fraction of *unique* human answer types that appear
 anywhere in GPT's top-$k$ predictions (unweighted).

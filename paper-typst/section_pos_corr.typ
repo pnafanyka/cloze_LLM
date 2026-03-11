@@ -35,47 +35,44 @@ Algorithm 2 yields the following per-POS correlations (sorted by Pearson $r$, de
   columns: (auto, auto, auto, auto, auto),
   align: (center, center, center, center, center),
   table.header[POS][Pearson $r$][Pearson $p$][Spearman $r$][Spearman $p$],
-  [NUM],   [0.94], [$< 0.001$], [0.58], [$< 0.001$],
-  [ADP],   [0.84], [$< 0.001$], [0.40], [$< 0.001$],
+  [NUM],   [0.94], [$< 0.001$], [0.62], [$< 0.001$],
+  [ADP],   [0.83], [$< 0.001$], [0.41], [$< 0.001$],
   [SCONJ], [0.76], [$< 0.001$], [0.40], [$< 0.001$],
-  [CCONJ], [0.71], [$< 0.001$], [0.47], [$< 0.001$],
-  [NOUN],  [0.70], [$< 0.001$], [0.81], [$< 0.001$],
-  [VERB],  [0.55], [$< 0.001$], [0.60], [$< 0.001$],
-  [ADJ],   [0.52], [$< 0.001$], [0.39], [$< 0.001$],
-  [ADV],   [0.43], [$< 0.001$], [0.33], [$< 0.001$],
-  [PRON],  [0.34], [$< 0.001$], [0.49], [$< 0.001$],
-  [PART],  [0.30], [$< 0.001$], [0.30], [$< 0.001$],
-  [DET],   [0.26], [$= 0.001$], [0.40], [$< 0.001$],
-  [X],     [0.02], [$= 0.776$], [0.05], [$= 0.513$],
-  [INTJ],  [$-0.004$], [$= 0.965$], [0.03], [$= 0.760$],
-  [PROPN], [$-0.007$], [$= 0.938$], [0.21], [$= 0.012$],
-  [PUNCT], [$-0.04$], [$= 0.644$], [0.01], [$= 0.861$],
+  [CCONJ], [0.71], [$< 0.001$], [0.45], [$< 0.001$],
+  [NOUN],  [0.69], [$< 0.001$], [0.83], [$< 0.001$],
+  [VERB],  [0.56], [$< 0.001$], [0.63], [$< 0.001$],
+  [ADJ],   [0.53], [$< 0.001$], [0.38], [$< 0.001$],
+  [ADV],   [0.43], [$< 0.001$], [0.34], [$< 0.001$],
+  [PRON],  [0.34], [$< 0.001$], [0.48], [$< 0.001$],
+  [PART],  [0.29], [$< 0.001$], [0.31], [$< 0.001$],
+  [DET],   [0.26], [$= 0.002$], [0.41], [$< 0.001$],
+  [INTJ],  [0.004], [$= 0.963$], [0.11], [$= 0.203$],
 )
 ]
 
-Algorithm 3 yields an overall mean delta of *0.046* across all 144 contexts (range:
-0.0002 -- 0.112).
+Algorithm 3 yields an overall mean delta of *0.045* across all 144 contexts (range:
+0.0002 -- 0.103).
 
 === Interpretation
 
 The per-POS correlations reveal a clear hierarchy. Closed-class functional categories that
-are syntactically constrained — NUM ($r = 0.94$), ADP ($r = 0.84$), SCONJ ($r = 0.76$),
+are syntactically constrained — NUM ($r = 0.94$), ADP ($r = 0.83$), SCONJ ($r = 0.76$),
 CCONJ ($r = 0.71$) — exhibit the strongest agreement between human cloze responses and
 model predictions. These categories are heavily determined by the preceding syntactic
 context, and both humans and GPT-4o-mini respond similarly to these constraints.
 
-Open-class content words show moderate agreement: NOUN ($r = 0.70$), VERB ($r = 0.55$),
-ADJ ($r = 0.52$). The relatively high Spearman correlation for NOUN ($rho = 0.81$)
+Open-class content words show moderate agreement: NOUN ($r = 0.69$), VERB ($r = 0.56$),
+ADJ ($r = 0.53$). The relatively high Spearman correlation for NOUN ($rho = 0.83$)
 suggests strong rank-order agreement even when absolute probability magnitudes differ.
 
-The weakest correlations are observed for categories that are either rare or
-context-insensitive: PUNCT ($r = -0.04$), PROPN ($r = -0.007$), INTJ ($r = -0.004$), and
-X ($r = 0.02$). The model's tendency to assign substantial probability to punctuation
-tokens (which rarely appear in human cloze responses) drives the near-zero or negative
-PUNCT correlation.
+The weakest correlation is observed for INTJ ($r = 0.004$), a category that is rare and
+context-insensitive. With both human and model data restricted to Russian-word tokens,
+PUNCT and X disappear from the filtered data entirely, and PROPN's model probabilities
+become near-constant (zero variance), making correlation undefined --- all three categories
+that previously showed near-zero or negative correlations are therefore excluded.
 
-The overall mean delta of 0.046 from Algorithm 3 indicates that, on average, each POS
-category's probability differs between humans and the model by about 4.6 percentage
+The overall mean delta of 0.045 from Algorithm 3 indicates that, on average, each POS
+category's probability differs between humans and the model by about 4.5 percentage
 points. While this confirms that human and model POS distributions are broadly aligned
-at the category level, the non-trivial per-context range (up to 0.112) shows that
+at the category level, the non-trivial per-context range (up to 0.103) shows that
 alignment varies considerably across sentence contexts.

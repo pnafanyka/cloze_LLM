@@ -20,25 +20,25 @@ and average across all 144 contexts.
 
 === Results
 
-The basic POS overlap\@1 rate is *0.556*, indicating that the model's most-weighted POS tag matches the human top POS in roughly 56% of contexts.
+The basic POS overlap\@1 rate is *0.597*, indicating that the model's most-weighted POS tag matches the human top POS in roughly 60% of contexts.
 
 #align(center)[
 #table(
   columns: (auto, auto),
   align: (center, center),
   table.header[$k$][mean POS intersection\@$k$],
-  [1], [0.556],
-  [2], [0.542],
-  [3], [0.502],
-  [4], [0.484],
-  [5], [0.464],
+  [1], [0.597],
+  [2], [0.590],
+  [3], [0.544],
+  [4], [0.491],
+  [5], [0.447],
 )
 ]
 
-Intersection\@$k$ decreases as $k$ grows, falling from 0.556 at $k = 1$ to 0.464 at $k = 5$. This decline indicates that beyond the dominant POS category, human and model distributions diverge in their secondary syntactic preferences.
+Intersection\@$k$ decreases as $k$ grows, falling from 0.597 at $k = 1$ to 0.447 at $k = 5$. This decline indicates that beyond the dominant POS category, human and model distributions diverge in their secondary syntactic preferences.
 
 === Interpretation
 
-A POS overlap\@1 of 56% shows that the model and humans agree on the dominant syntactic category roughly half the time. This is a moderate level of agreement --- substantially above chance (given the number of possible UPOS tags), yet far from ceiling. Contexts where they disagree often involve the model assigning highest mass to punctuation (PUNCT) or function words (PART, ADP), while humans favour content-word categories such as NOUN or VERB.
+A POS overlap\@1 of 60% shows that the model and humans agree on the dominant syntactic category in the majority of contexts. This is a moderate-to-good level of agreement --- substantially above chance (given the number of possible UPOS tags), yet far from ceiling. Contexts where they disagree often involve the model assigning highest mass to function words (PART, ADP), while humans favour content-word categories such as NOUN or VERB.
 
-The gradual decline of intersection\@$k$ with increasing $k$ suggests that the syntactic diversity of human responses is only partially mirrored by the model. At $k = 5$ the model still recovers roughly 46% of the top human POS categories on average, indicating that the two distributions share a common core of syntactic expectations but diverge in the tails. These findings are consistent with the lexical overlap results: GPT-4o-mini captures the broad syntactic shape of human expectations while differing in finer distributional details.
+The gradual decline of intersection\@$k$ with increasing $k$ suggests that the syntactic diversity of human responses is only partially mirrored by the model. At $k = 5$ the model still recovers roughly 45% of the top human POS categories on average, indicating that the two distributions share a common core of syntactic expectations but diverge in the tails. These findings are consistent with the lexical overlap results: GPT-4o-mini captures the broad syntactic shape of human expectations while differing in finer distributional details.
