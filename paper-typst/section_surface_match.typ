@@ -41,7 +41,7 @@ At $k = 10$ the model's top candidates already cover 40 % of human response mass
 but only 21 % of unique answer *types* — reflecting that GPT reliably finds the most frequent
 human answers while missing rare or idiosyncratic ones.
 
-In 9 contexts (e.g. _летела_, _миссионеры_, _обгорели_) GPT produces *zero overlap* with
+In 9 contexts (e.g. _Когда она в самолёте_, _В резервациях_, _У Пашки_) GPT produces *zero overlap* with
 any human answer even at $k = 1000$, suggesting fundamental distributional divergence on
 semantically constrained or low-frequency items.
 
