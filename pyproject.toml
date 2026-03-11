@@ -21,6 +21,9 @@ dev = [
   "ty>=0.0.1a18",
 ]
 
+[tool.ruff]
+extend-exclude = ["pred_beam_3.ipynb", "копия_openai_api_preds_2.ipynb"]
+
 [tool.ruff.lint]
 select = [
   "E",   # pycodestyle
@@ -31,5 +34,7 @@ select = [
   "I",   # isort
 ]
 ignore = [
-  "E501", # line length
+  "E501",   # line length
+  "F821",   # undefined names in notebooks (interactive scratch cells)
+  "SIM103", # return-condition-directly (stylistic)
 ]

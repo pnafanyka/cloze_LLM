@@ -1,7 +1,7 @@
-import pandas as pd
-import numpy as np
-from scipy import stats
 from pathlib import Path
+
+import pandas as pd
+from scipy import stats
 
 K_VALUES = [5, 10, 20, 50, 100]
 OUT = Path("output/target")
@@ -170,7 +170,7 @@ for _, row in contexts.iterrows():
         top_k = set(gpt_lemmas[:k])
         found = h_lemmas & top_k
         rec[f"overlap_at_{k}"] = len(found) / len(h_lemmas) if h_lemmas else 0.0
-        rec[f"weighted_overlap_at_{k}"] = sum(h_probs[l] for l in found)
+        rec[f"weighted_overlap_at_{k}"] = sum(h_probs[lem] for lem in found)
 
     overlap_records.append(rec)
 

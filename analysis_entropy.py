@@ -1,6 +1,7 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 K_VALUES = [5, 10, 20, 50, 100]
 OUT = Path("output/entropy")
@@ -142,7 +143,7 @@ for word_id, gpt_lemmas in gpt_lemma_deduped.items():
         row[f"overlap_at_{k}"] = (
             len(found) / len(human_lemmas) if human_lemmas else 0.0
         )
-        row[f"weighted_overlap_at_{k}"] = sum(lemma_prob[l] for l in found)
+        row[f"weighted_overlap_at_{k}"] = sum(lemma_prob[lem] for lem in found)
 
     records.append(row)
 

@@ -1,5 +1,6 @@
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 K_VALUES = [5, 10, 15, 20, 50, 100, 200]
 OUT = Path("output/lexical")
@@ -106,7 +107,7 @@ for word_id, gpt_lemmas in gpt_deduped.items():
             len(found_lemmas) / len(human_lemmas) if human_lemmas else 0.0
         )
         row[f"weighted_overlap_at_{k}"] = sum(
-            lemma_prob[l] for l in found_lemmas
+            lemma_prob[lem] for lem in found_lemmas
         )
 
         # Surface-form match@K (baseline)
@@ -157,7 +158,7 @@ summary.to_csv(OUT / "summary.csv", index=False)
 print(f"Written {len(summary)} rows to {OUT / 'summary.csv'}")
 
 # --- Print mean across all 144 contexts ---
-print(f"\n=== Mean across all contexts ===\n")
+print("\n=== Mean across all contexts ===\n")
 print(f"{'K':>5}  {'overlap@K':>12}  {'wt_overlap@K':>14}  {'surf_match@K':>14}  {'wt_surf_match@K':>17}")
 print("-" * 70)
 for k in K_VALUES:
